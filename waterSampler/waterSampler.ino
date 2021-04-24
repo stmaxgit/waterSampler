@@ -12,10 +12,19 @@ unsigned long timeBetweenSamplesMillis =
 // Sentinel to ensure solenoids open only once
 bool hasFinishedSampling = false;
 
-void setup() {
-  //  Disables ADC, we aren't using it and it draws pretty high current
-  ADCSRA = 0;
+/*  Reducing the clock speed breaks delay behavior,
+ *  use delayProper in place of delay.
+ */
+void delayProper(unsigned long timeMillis) {
+  return delay(timeMillis / 2);
+}
 
+void setup() {
+  //  Disable ADC, we aren't using it
+  ADCSRA = 0;
+  CLKPR = _BV(CLKPCE);  // enable change of the clock prescaler
+  CLKPR = _BV(CLKPS0);  // divide frequency by 2
+  
   for (int i = 0;
        i < sizeof(controlPins) / sizeof(controlPins[0]);
        i++) {
@@ -27,10 +36,11 @@ void loop() {
   if (!hasFinishedSampling) {
     for (int i = 0; i < 10; i++) {
       digitalWrite(i, HIGH);
-      delay(solenoidOpenTimeMillis);
+      delayProper(solenoidOpenTimeMillis);
       digitalWrite(i, LOW);
-      delay(timeBetweenSamplesMillis);
+      delayProper(timeBetweenSamplesMillis);
    }
     hasFinishedSampling = true;
   }
 }
+
