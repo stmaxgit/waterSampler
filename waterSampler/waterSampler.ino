@@ -8,7 +8,7 @@ float timeBetweenSamplesHours = (float) 1 / (60 * 60);
 
 // Convert hours to millseconds
 unsigned long timeBetweenSamplesMillis = 
-  (unsigned long) timeBetweenSamplesHours * 60 * 60 * 1000;
+  (unsigned long) (timeBetweenSamplesHours * 60 * 60 * 1000);
 // Sentinel to ensure solenoids open only once
 bool hasFinishedSampling = false;
 
